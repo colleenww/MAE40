@@ -91,15 +91,15 @@ omega4=10; zeta=1; F_LPF2_damped_tr=RR_tf([omega4^2],[1 2*zeta*omega4 omega4^2])
 figure(7), RR_bode(F_LPF2_damped_tr), pause
 
 %% Question 3
-% x={Ir; I_L; Ic; Iload; V1; V2}  <-- unknown vector   
-syms V0 V1 V2
-A  =[ -1  1  -1    0    0   0;   % I_L - Ic - Ir = 0    KCL1
-      1   0   0   -1    0   0;   % Ir - Ic = 0          KCL2
-      0  -4   0    0    1   0;   % -L*s*Ic + V1 = V0    inductor eqn
-     -R   0   0    0    1   0;   % -Ir*R + V1 = Vo      resistor eqn
-      0   0   1    0  -L*s  0;   % Ic - C*sV1 = -C*s*Vo capacitor eqn
-      0   0   1    0    0 -L*s]; % Ic - C*s*V2 = 0      load eqn
-b  =[ 0;  0; V0; V0; -C*s*V0; 0];
+% x={I_l; Ic; Ir; Id; Vo; Vd}  <-- unknown vector   
+syms Cd Rd
+A  =[ 1  -1  -1    0    0   0;   % I_L = Ic + Ir        KCL1
+      0   1   0    0  -s*C  0;   % Ic = s*C*Vo          KCL2
+     s*L  0   0    0    1   0;   % Vi - Vo = s*L*I_L    inductor eqn
+      0   0   1   -1    0   0;   % Ir = Id              resistor eqn
+      0   0   0    1    0 -s*C; % Id = s*Cd*Vd         % capacitor eqn
+      0   0  -Rd   0    1  -1];  % Vo - Vd = Ir*Rd      load eqn
+b  =[ 0;  0; Vi; 0; 0; 0];
 x=A\b; Vo_LPF2_damped=simplify(x(4))
 omega4=10; F_LPF2_damped=RR_tf([omega4^2],[1 0 omega4^2]);
 figure(8), RR_bode(F_LPF2_damped)
