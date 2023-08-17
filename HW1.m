@@ -91,14 +91,8 @@ omega4=10; zeta=1; F_LPF2_damped_tr=RR_tf([omega4^2],[1 2*zeta*omega4 omega4^2])
 figure(7), RR_bode(F_LPF2_damped_tr), pause
 
 %% Question 3
-% script RR_Ex10_mid20_p1_notch_filter
-% This code implments the equations governing the Notch filter,
-% as discussed in problem 1 of the 2020 midterm in MAE40.
-% Renaissance Robotics codebase, Chapter 10, https://github.com/tbewley/RR
-% Copyright 2023 by Thomas Bewley, distributed under Modified BSD License. 
-
-syms s R L C c1 V0      % NOTE: We will solve for V1 as a fn of V0
 % x={Ir; I_L; Ic; Iload; V1; V2}  <-- unknown vector   
+syms V0 V1 V2
 A  =[ -1  1  -1    0    0   0;   % I_L - Ic - Ir = 0    KCL1
       1   0   0   -1    0   0;   % Ir - Ic = 0          KCL2
       0  -4   0    0    1   0;   % -L*s*Ic + V1 = V0    inductor eqn
@@ -106,10 +100,6 @@ A  =[ -1  1  -1    0    0   0;   % I_L - Ic - Ir = 0    KCL1
       0   0   1    0  -L*s  0;   % Ic - C*sV1 = -C*s*Vo capacitor eqn
       0   0   1    0    0 -L*s]; % Ic - C*s*V2 = 0      load eqn
 b  =[ 0;  0; V0; V0; -C*s*V0; 0];
-x=A\b; V1_notch=simplify(x(5))
-
-c1=1;
-omega0=10 % = 1/sqrt(L*C)
-Q =10;    % = 1/(R*C*omega0) 
-F_notch=RR_tf([1 0 omega0^2]/(1+c1),[1 omega0/Q/(1+c1) omega0^2]);
-close all; figure(8), RR_bode(F_notch)
+x=A\b; Vo_LPF2_damped=simplify(x(4))
+omega4=10; F_LPF2_damped=RR_tf([omega4^2],[1 0 omega4^2]);
+figure(8), RR_bode(F_LPF2_damped)
